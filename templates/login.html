@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow mt-5 border-0">
+            <div class="card-body p-4">
+
+                <h3 class="text-center mb-4 fw-bold text-primary">{{ lang['login'] }}</h3>
+
+                <form method="POST" autocomplete="off">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">{{ lang['label_username'] }}</label>
+                        {{ form.username(class="form-control shadow-sm", placeholder=lang['label_username_placeholder']) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">{{ lang['label_password'] }}</label>
+                        {{ form.password(class="form-control shadow-sm", placeholder=lang['label_password']) }}
+                    </div>
+
+                    <div class="mb-2 text-end">
+                        <a href="{{ url_for('forgot_password') }}" class="small text-decoration-none">
+                            {{ lang['forgot_pw'] }}
+                        </a>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Login As</label>
+                        {{ form.role(class="form-select shadow-sm") }}
+                    </div>
+
+                    {{ form.submit(class="btn btn-primary w-100 py-2 fw-semibold shadow-sm", value=lang['login']) }}
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="mb-0 small text-muted">{{ lang['no_account'] }}</p>
+                    <a href="{{ url_for('register') }}" class="fw-bold text-decoration-none">
+                        {{ lang['reg_link'] }}
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

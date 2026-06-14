@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lang['admin_dash'] }} - Shelgaon Gram Panchayat{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <header class="row align-items-center mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center p-3 bg-white rounded-3 shadow-sm border-start border-primary border-5">
+                <div class="bg-primary bg-gradient text-white rounded-circle p-3 me-3 shadow-sm">
+                    <i class="bi bi-speedometer2 fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="mb-0 fw-bold text-dark">{{ lang['admin_dash'] }}</h2>
+                    <p class="mb-0 text-muted">{{ lang['admin_subtitle'] }}</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <section class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="stat-icon-wrap primary"><i class="bi bi-people"></i></div>
+                        <span class="text-primary fw-bold fs-4">{{ total_officers }}</span>
+                    </div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-0 letter-spacing-1">{{ lang['label_officers'] }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="stat-icon-wrap success"><i class="bi bi-people-fill"></i></div>
+                        <span class="text-success fw-bold fs-4">{{ total_citizens }}</span>
+                    </div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-0 letter-spacing-1">{{ lang['label_citizens'] }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-6">
+            <div class="card stat-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="stat-icon-wrap warning"><i class="bi bi-file-earmark-text"></i></div>
+                        <span class="text-warning fw-bold fs-4">{{ total_complaints }}</span>
+                    </div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-0 letter-spacing-1">{{ lang['label_complaints_total'] }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-6">
+            <div class="card stat-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="stat-icon-wrap info"><i class="bi bi-clock"></i></div>
+                        <span class="text-info fw-bold fs-4">{{ pending_complaints }}</span>
+                    </div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-0 letter-spacing-1">{{ lang['status_pending'] }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-6">
+            <div class="card stat-card shadow-sm border-0 h-100 border-start border-info border-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="stat-icon-wrap bg-info-subtle text-info"><i class="bi bi-chat-left-heart"></i></div>
+                        <span class="text-info fw-bold fs-4">{{ feedbacks|length if feedbacks else 0 }}</span>
+                    </div>
+                    <h6 class="text-uppercase text-muted small fw-bold mb-0 letter-spacing-1">Feedbacks</h6>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100 overflow-hidden">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-person-shield text-primary me-2"></i>{{ lang['label_officers'] }}</h5>
+                    <button class="btn btn-sm btn-primary px-3 rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#addOfficerModal">
+                        <i class="bi bi-plus-lg me-1"></i> {{ lang['btn_add'] }}
+                    </button>
+                </div>
+                <div class="card-body p-0 scroll-container">
+                    {% if officers %}
+                    <div class="list-group list-group-flush">
+                        {% for officer in officers %}
+                        <div class="list-group-item border-0 px-4 py-3 list-hover-item">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3 bg-primary-subtle text-primary fw-bold">{{ officer.name[0]|upper }}</div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">{{ officer.name }}</h6>
+                                    <small class="text-muted">@{{ officer.username }}</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3">{{ officer.role }}</span>
+                                    <form method="POST" action="{{ url_for('delete_officer', officer_id=officer.id) }}" onsubmit="return confirm('{{ lang.confirm_delete }}');">
+                                        <button type="submit" class="btn btn-icon btn-outline-danger btn-sm border-0 rounded-circle">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="p-5 text-center">
+                        <i class="bi bi-person-plus fs-1 text-muted mb-3 d-block"></i>
+                        <p class="text-muted mb-0">{{ lang['no_officers'] }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100 overflow-hidden">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-people text-success me-2"></i>{{ lang['label_citizens'] }}</h5>
+                    <button class="btn btn-sm btn-outline-success px-3 rounded-pill" data-bs-toggle="modal" data-bs-target="#citizenComplaintsModal">
+                        <i class="bi bi-eye me-1"></i>{{ lang['btn_view_complaints'] }}
+                    </button>
+                </div>
+                <div class="card-body p-0 scroll-container">
+                    {% if citizens %}
+                    <div class="list-group list-group-flush">
+                        {% for citizen in citizens %}
+                        <a href="#" class="list-group-item list-group-item-action border-0 px-4 py-3 citizen-item" 
+                           data-citizen-id="{{ citizen.id }}" data-citizen-name="{{ citizen.name }}">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3 bg-success-subtle text-success fw-bold">{{ citizen.name[0]|upper }}</div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ citizen.name }}</h6>
+                                        <small class="text-muted">{{ citizen.username }}</small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">{{ lang['label_citizen'] }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="p-5 text-center">
+                        <i class="bi bi-people fs-1 text-muted mb-3 d-block"></i>
+                        <p class="text-muted mb-0">{{ lang['no_citizens'] }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light-subtle py-3 border-bottom">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-funnel me-2 text-primary"></i>{{ lang['filter_title'] }}</h6>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label small fw-bold text-muted">{{ lang['label_ward'] }}</label>
+                    <input type="number" name="ward" class="form-control" value="{{ request.args.get('ward', '') }}" placeholder="e.g. 5">
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label small fw-bold text-muted">{{ lang['label_cat'] }}</label>
+                    <select name="category" class="form-select">
+                        <option value="">{{ lang['all_cats'] }}</option>
+                        {% for cat in ['Water Supply','Roads','Sanitation','Electricity','Drainage','Safety','Services','Other'] %}
+                        <option value="{{ cat }}" {% if request.args.get('category') == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <button class="btn btn-primary w-100 shadow-sm" type="submit"><i class="bi bi-search me-1"></i>{{ lang['btn_filter'] }}</button>
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-secondary w-100">{{ lang['btn_reset'] }}</a>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <a href="{{ url_for('admin_panel', ward=request.args.get('ward'), category=request.args.get('category'), export='csv') }}" class="btn btn-success w-100 shadow-sm fw-bold">
+                        <i class="bi bi-download me-1"></i>{{ lang['btn_export'] }}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="card-header bg-white border-bottom py-3">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-table text-primary me-2"></i>{{ lang['history_head'] }}</h5>
+                </div>
+                <div class="col-md-8 text-md-end mt-3 mt-md-0">
+                    <nav class="btn-group btn-group-sm" role="group">
+                        <a href="{{ url_for('admin_panel', period='today') }}" class="btn btn-outline-primary {% if period_filter == 'today' %}active{% endif %}">{{ lang['filter_today'] }}</a>
+                        <a href="{{ url_for('admin_panel', period='week') }}" class="btn btn-outline-primary {% if period_filter == 'week' %}active{% endif %}">{{ lang['filter_week'] }}</a>
+                        <a href="{{ url_for('admin_panel', period='month') }}" class="btn btn-outline-primary {% if period_filter == 'month' %}active{% endif %}">{{ lang['filter_month'] }}</a>
+                        <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-primary {% if not period_filter or period_filter == 'all' %}active{% endif %}">{{ lang['filter_all'] }}</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if complaints %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-dark fw-bold">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>{{ lang['label_citizen'] }}</th>
+                            <th>{{ lang['label_cat'] }}</th>
+                            <th>{{ lang['label_ward_short'] }}</th>
+                            <th>{{ lang['label_desc'] }}</th>
+                            <th>{{ lang['label_status'] }}</th>
+                            <th>Photos</th>
+                            <th>{{ lang['label_date'] }}</th>
+                            <th class="text-end pe-4">{{ lang['label_action'] }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr class="hover-table-row">
+                            <td class="ps-4 fw-bold text-muted">#{{ complaint.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle-sm bg-primary bg-gradient text-white me-2">
+                                        {{ complaint.user.name[0]|upper if complaint.user.name else 'U' }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold small">{{ complaint.user.name }}</div>
+                                        <div class="text-muted smaller">{{ complaint.user.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-light text-primary border border-primary-subtle rounded-pill">{{ complaint.category }}</span></td>
+                            <td><span class="fw-bold">W-{{ complaint.ward_no }}</span></td>
+                            <td><div class="text-truncate" style="max-width: 150px;" title="{{ complaint.description }}">{{ complaint.description }}</div></td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2 
+                                    {% if complaint.status == 'Pending' %} bg-warning-subtle text-warning border border-warning-subtle
+                                    {% elif complaint.status == 'In Progress' %} bg-info-subtle text-info border border-info-subtle
+                                    {% elif complaint.status == 'Resolved' %} bg-success-subtle text-success border border-success-subtle
+                                    {% else %} bg-secondary-subtle text-secondary border border-secondary-subtle {% endif %}">
+                                    {{ complaint.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    {% if complaint.photo %}
+                                    <a href="{{ url_for('static', filename='uploads/' ~ complaint.photo) }}" target="_blank" class="btn btn-sm btn-light border p-1" title="View Issue"><i class="bi bi-image text-primary"></i></a>
+                                    {% endif %}
+                                    {% if complaint.resolution_photo %}
+                                    <a href="{{ url_for('static', filename='uploads/' ~ complaint.resolution_photo) }}" target="_blank" class="btn btn-sm btn-success p-1" title="View Resolution"><i class="bi bi-check-circle"></i></a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td><div class="smaller fw-bold">{{ complaint.created_at.strftime('%d/%m/%y') }}</div></td>
+                            <td class="text-end pe-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light border dropdown-toggle" data-bs-toggle="dropdown">Actions</button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                        <li><a class="dropdown-item" href="{{ url_for('update_status', id=complaint.id, status='Pending') }}">Pending</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('update_status', id=complaint.id, status='In Progress') }}">In Progress</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('update_status', id=complaint.id, status='Resolved') }}">Resolved</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form method="POST" action="{{ url_for('delete_complaint', complaint_id=complaint.id) }}">
+                                                <button class="dropdown-item text-danger" type="submit">Delete</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5"><h5 class="text-muted">{{ lang['no_complaints'] }}</h5></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom py-3">
+            <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-chat-left-dots text-info me-2"></i>Citizen Feedback</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if feedbacks %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-dark fw-bold">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Citizen</th>
+                            <th>Message</th>
+                            <th>Rating</th>
+                            <th>Date</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for feedback in feedbacks %}
+                        <tr>
+                            <td class="ps-4">#{{ feedback.id }}</td>
+                            <td><div class="fw-bold small">{{ feedback.user.name }}</div></td>
+                            <td><div class="small text-wrap" style="max-width: 300px;">{{ feedback.feedback_msg }}</div></td>
+                            <td>
+                                <div class="text-warning">
+                                    {% for i in range(feedback.feedback_rating|int) %}<i class="bi bi-star-fill"></i>{% endfor %}
+                                    {% for i in range(5 - feedback.feedback_rating|int) %}<i class="bi bi-star"></i>{% endfor %}
+                                </div>
+                            </td>
+                            <td><div class="smaller">{{ feedback.created_at.strftime('%d/%m/%y') }}</div></td>
+                            <td class="text-end pe-4">
+                                <form method="POST" action="{{ url_for('delete_feedback', feedback_id=feedback.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-circle"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5"><p class="text-muted">No feedback received yet.</p></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addOfficerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <form method="POST" action="{{ url_for('add_officer') }}">
+                {{ add_officer_form.hidden_tag() }}
+                <div class="modal-header border-0 bg-primary text-white">
+                    <h5 class="modal-title fw-bold">{{ lang['modal_add_officer'] }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">{{ add_officer_form.name(class="form-control bg-light", placeholder=lang['label_name']) }}</div>
+                    <div class="mb-3">{{ add_officer_form.email(class="form-control bg-light", placeholder=lang['label_email']) }}</div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">{{ add_officer_form.username(class="form-control bg-light", placeholder=lang['label_username']) }}</div>
+                        <div class="col-md-6">{{ add_officer_form.password(class="form-control bg-light", placeholder=lang['label_password']) }}</div>
+                    </div>
+                    <div class="mb-2">{{ add_officer_form.role(class="form-select bg-light") }}</div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    {{ add_officer_form.submit(class="btn btn-primary px-4", value=lang['btn_add']) }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="citizenComplaintsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg overflow-hidden">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">Citizen Records</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" id="citizenComplaintsContent">
+                <div class="p-5 text-center text-muted"><h5>Select a citizen to view details</h5></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root { 
+        --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); 
+    }
+    .stat-card { transition: transform 0.2s ease, box-shadow 0.2s ease; border-radius: 12px; }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    .stat-icon-wrap { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .stat-icon-wrap.primary { background-color: #e0e7ff; color: #4338ca; }
+    .stat-icon-wrap.success { background-color: #dcfce7; color: #15803d; }
+    .stat-icon-wrap.warning { background-color: #fef9c3; color: #a16207; }
+    .stat-icon-wrap.info { background-color: #e0f2fe; color: #0369a1; }
+    .avatar-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .avatar-circle-sm { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+    .scroll-container { max-height: 400px; overflow-y: auto; }
+    .letter-spacing-1 { letter-spacing: 1px; }
+    .smaller { font-size: 0.8rem; }
+    .hover-table-row:hover { background-color: rgba(59, 130, 246, 0.02); }
+</style>
+
+<script>
+    document.querySelectorAll('.citizen-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const cid = this.dataset.citizenId;
+            const cname = this.dataset.citizenName;
+            fetch(`/admin/citizen_complaints/${cid}`)
+                .then(res => res.json())
+                .then(data => {
+                    let html = `<div class="p-4 bg-light border-bottom d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-dark fs-5">${cname} - Complaint History</span>
+                                    <span class="badge bg-primary rounded-pill">${data.complaints.length} Records</span>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr><th>ID</th><th>Category</th><th>Status</th></tr>
+                                        </thead>
+                                        <tbody>`;
+                    if(data.complaints.length > 0) {
+                        data.complaints.forEach(c => {
+                            html += `<tr>
+                                        <td class="fw-bold">#${c.id}</td>
+                                        <td>${c.category}</td>
+                                        <td><span class="badge rounded-pill bg-secondary-subtle text-secondary border">${c.status}</span></td>
+                                    </tr>`;
+                        });
+                    } else {
+                        html += `<tr><td colspan="3" class="text-center py-4 text-muted">No complaints found for this citizen.</td></tr>`;
+                    }
+                    html += `</tbody></table></div>`;
+                    document.getElementById('citizenComplaintsContent').innerHTML = html;
+                    new bootstrap.Modal(document.getElementById('citizenComplaintsModal')).show();
+                })
+                .catch(err => {
+                    console.error('Error fetching citizen data:', err);
+                });
+        });
+    });
+</script>
+{% endblock %}

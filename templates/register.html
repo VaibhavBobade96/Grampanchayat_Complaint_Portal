@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 mt-5">
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold text-success">{{ lang['register'] }}</h3>
+                    <p class="text-muted small">
+                        {{ lang['track_subtitle'] }}
+                    </p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">{{ lang['label_name'] }}</label>
+                        {{ form.name(class="form-control shadow-sm", placeholder=lang['label_name']) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">{{ lang['label_email'] }}</label>
+                        {{ form.email(class="form-control shadow-sm", placeholder="example@email.com") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">{{ lang['label_username'] }}</label>
+                        {{ form.username(class="form-control shadow-sm", placeholder=lang['placeholder_user']) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">{{ lang['label_password'] }}</label>
+                        {{ form.password(class="form-control shadow-sm", placeholder="********") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">{{ lang['label_password'] }} ({{ lang['btn_reset'] }})</label>
+                        {{ form.confirm_password(class="form-control shadow-sm", placeholder="********") }}
+                    </div>
+
+                    <input type="hidden" name="role" value="citizen">
+
+                    <div class="d-grid mt-4">
+                        {{ form.submit(class="btn btn-success btn-lg shadow", value=lang['btn_register']) }}
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('login') }}" class="text-decoration-none small">
+                        {{ lang['already_account'] }}
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

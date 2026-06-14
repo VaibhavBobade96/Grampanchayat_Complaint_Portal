@@ -1,0 +1,302 @@
+/* Mategaon Gram Panchayat - Light Professional Design */
+/* Light Colors + Subtle Hover Effects */
+
+:root {
+    --primary: #3b82f6;      /* Light Blue */
+    --secondary: #10b981;     /* Green */
+    --accent: #f59e0b;        /* Soft Gold */
+    --light: #f8fafc;         /* Very Light */
+    --dark: #1e293b;          /* Dark Gray */
+    --white: #ffffff;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --shadow-light: rgba(0,0,0,0.08);
+    --shadow-medium: rgba(0,0,0,0.12);
+}
+
+/* Base */
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(to bottom, var(--light) 0%, var(--gray-100) 100%);
+    color: var(--dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Navbar - Light Blue */
+.navbar {
+    background: rgba(59,130,246,0.95);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(59,130,246,0.15);
+    padding: 1.2rem 0;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--white) !important;
+    letter-spacing: -0.5px;
+}
+
+.navbar-brand:hover {
+    color: var(--white) !important;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.nav-link {
+    color: var(--white) !important;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 10px;
+    margin: 0 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--white) !important;
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-1px);
+}
+
+/* Hero Section - Light Gradient */
+.hero {
+    background: linear-gradient(135deg, 
+        rgba(59,130,246,0.85) 0%, 
+        rgba(16,185,129,0.75) 50%, 
+        rgba(245,158,11,0.65) 100%);
+    color: var(--white);
+    padding: 150px 0 120px;
+    text-align: center;
+    position: relative;
+}
+
+.hero h1 {
+    font-size: clamp(2.8rem, 7vw, 4.5rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+
+.hero-subtitle {
+    font-size: 1.35rem;
+    max-width: 650px;
+    margin: 0 auto 3rem;
+    opacity: 0.95;
+    font-weight: 400;
+}
+
+/* Buttons - SUBTLE HOVER (Kam effect) */
+.hero-buttons .btn,
+.btn-primary-custom,
+.btn-success-custom {
+    padding: 14px 35px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0 12px 15px;
+    border: none;
+    transition: all 0.25s ease;  /* Faster & subtle */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--accent), #fbbf24);
+    color: #92400e !important;
+}
+
+.btn-success-custom {
+    background: linear-gradient(135deg, var(--secondary), #34d399);
+    color: white !important;
+}
+
+/* SUBTLE HOVER - Sirf slight lift */
+.btn:hover {
+    transform: translateY(-2px);  /* Kam lift */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);  /* Kam shadow */
+}
+
+/* Main Content */
+.main-content {
+    padding: 80px 0;
+    min-height: calc(100vh - 320px);
+}
+
+.main-content > .container {
+    max-width: 1100px;
+}
+
+/* Footer - Dark Blue Light Text */
+.footer {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
+    color: rgba(255,255,255,0.95);
+    padding: 60px 0 25px;
+    margin-top: 80px;
+}
+
+.footer h5 {
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.15rem;
+}
+
+.footer p, .footer-link {
+    color: rgba(255,255,255,0.88);
+    margin-bottom: 0.9rem;
+    font-size: 0.96rem;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: var(--accent);
+    padding-left: 8px;
+}
+
+.contact-highlight {
+    background: rgba(245,158,11,0.15);
+    padding: 22px;
+    border-radius: 12px;
+    border-left: 4px solid var(--accent);
+    margin-top: 18px;
+    font-size: 0.97rem;
+}
+
+.social-icons a {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    background: var(--accent);
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 45px;
+    padding-top: 30px;
+    text-align: center;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+/* togle button */
+/* ================= THEME TOGGLE BUTTON ================= */
+#themeToggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 20px;
+    border: 1px solid #adb5bd;
+    background-color: transparent;
+    color: #212529;
+    transition: all 0.25s ease;
+}
+
+/* Hover effect */
+#themeToggle:hover {
+    background-color: #e9ecef;
+    border-color: #6c757d;
+}
+
+/* Dark mode style */
+body.dark-mode #themeToggle {
+    color: #f8f9fa;
+    border-color: #6c757d;
+    background-color: transparent;
+}
+
+body.dark-mode #themeToggle:hover {
+    background-color: #2b2b2b;
+}
+
+
+/* Cards */
+.hover-card {
+    transition: all 0.3s ease;
+    border: 1px solid var(--gray-200);
+}
+
+.hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px var(--shadow-light);
+    border-color: var(--primary);
+}
+
+.icon-circle {
+    width: 75px;
+    height: 75px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 25px rgba(59,130,246,0.3);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .navbar-collapse {
+        background: rgba(59,130,246,0.98);
+        margin-top: 12px;
+        border-radius: 12px;
+        padding: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 110px 0 90px;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-buttons .btn {
+        display: block;
+        margin: 12px auto;
+        max-width: 300px;
+    }
+}
+
+/* Smooth subtle transitions */
+html {
+    scroll-behavior: smooth;
+}
+
+
+/* ================= NAVBAR LOGO FIX - PROPER ================= */
+.navbar-brand {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 0 !important;  /* Override Bootstrap padding */
+    line-height: 1;         /* Prevent vertical misalignment */
+}
+
+.navbar-brand img {
+    max-height: 36px;
+    width: auto;
+    height: auto;           /* Ensure responsive scaling */
+    display: block;
+    object-fit: contain;
+}

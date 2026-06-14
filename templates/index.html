@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Shelgaon Gram Panchayat{% endblock %}
+
+{% block hero_title %}Welcome to Shelgaon {% endblock %}
+{% block hero_subtitle %}Modern complaint management system for transparent village governance.{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center text-center py-5">
+    <div class="col-lg-8">
+        <div class="display-5 fw-bold mb-4" style="color: var(--primary);">
+            Ready to Start?
+        </div>
+        <p class="lead mb-5 opacity-90 fs-5">File complaints, track progress, manage ward - all in one simple platform.</p>
+        
+        <div class="row g-4 mt-5">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle mb-3 mx-auto">
+                            <i class="bi bi-chat-dots fs-1 text-primary"></i>
+                        </div>
+                        <h5>File Complaint</h5>
+                        <p class="text-muted">Submit issues instantly from anywhere</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle mb-3 mx-auto">
+                            <i class="bi bi-check-circle fs-1 text-success"></i>
+                        </div>
+                        <h5>Track Status</h5>
+                        <p class="text-muted">Real-time updates on your complaints</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle mb-3 mx-auto">
+                            <i class="bi bi-people fs-1 text-warning"></i>
+                        </div>
+                        <h5>Ward Management</h5>
+                        <p class="text-muted">Complete dashboard for officials</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.hover-card {
+    transition: all 0.3s ease;
+}
+.hover-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px var(--shadow);
+}
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto;
+}
+</style>
+{% endblock %}

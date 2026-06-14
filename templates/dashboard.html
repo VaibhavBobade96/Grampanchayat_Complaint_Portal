@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lang['my_complaints'] }} - Shelgaon Gram Panchayat{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-5">
+    <div class="col-md-12">
+        <div class="d-flex align-items-center">
+            <div class="complaint-icon me-3">
+                <i class="bi bi-chat-dots fs-2 text-primary"></i>
+            </div>
+            <div>
+                <h2 class="mb-1 fw-bold">{{ lang['my_complaints'] }}</h2>
+                <p class="text-muted mb-0">{{ lang['track_subtitle'] }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-5">
+    <div class="card-header bg-primary text-white py-4">
+        <h5 class="mb-0 fw-semibold text-center">
+            <i class="bi bi-plus-circle me-2"></i>{{ lang['comp_head'] }}
+        </h5>
+    </div>
+    <div class="card-body p-4 p-md-5">
+       <form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            {% if form.errors %}
+                <div class="alert alert-danger shadow-sm border-0">
+                    <ul class="mb-0">
+                        {% for field, errors in form.errors.items() %}
+                            {% for error in errors %}
+                                <li><strong>{{ field.label.text }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ lang['label_cat'] }} <span class="text-danger">*</span></label>
+                    {# Dropdown options are handled in app.py or manually translated here #}
+                    <select name="category" class="form-select shadow-sm">
+                        <option value="Water Supply">{{ lang['cat_water_supply'] }}</option>
+                        <option value="Roads">{{ lang['cat_roads'] }}</option>
+                        <option value="Sanitation">{{ lang['cat_sanitation'] }}</option>
+                        <option value="Street Lights">{{ lang['cat_street_lights'] }}</option>
+                        <option value="Electricity">{{ lang['cat_electricity'] }}</option>
+                        <option value="Others">{{ lang['cat_others'] }}</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">{{ lang['label_ward'] }} <span class="text-danger">*</span></label>
+                    {{ form.ward_no(class="form-control shadow-sm", placeholder="Ward 5") }}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">{{ lang['label_desc'] }} <span class="text-danger">*</span></label>
+                {{ form.description(class="form-control shadow-sm", rows="4", placeholder=lang['label_desc']) }}
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">{{ lang['label_photo'] }}</label>
+                {{ form.photo(class="form-control shadow-sm") }}
+                <small class="text-muted">JPG, PNG (Max 5MB)</small>
+            </div>
+
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary px-5 shadow-sm fw-semibold">{{ lang['btn_submit'] }}</button>
+                <button type="reset" class="btn btn-outline-secondary px-5 fw-semibold">{{ lang['btn_reset'] }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-lightblue py-4">
+        <h5 class="mb-0 fw-semibold text-center">
+            <i class="bi bi-list me-2 text-primary"></i>{{ lang['history_head'] }}
+        </h5>
+    </div>
+    
+    <div class="card-body p-0">
+        {% if complaints %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr class="table-header">
+                        <th>ID</th>
+                        <th>{{ lang['label_cat'] }}</th>
+                        <th>{{ lang['label_status'] }}</th>
+                        <th class="text-center">{{ lang['label_photo_short'] }} (Proof)</th>
+                        <th class="text-center">Feedback</th> 
+                        <th>{{ lang['label_date'] }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for complaint in complaints %}
+                    <tr class="table-row-blue">
+                        <td class="fw-semibold text-primary">#{{ complaint.id }}</td>
+                        <td>
+                            {% set cat_key = 'cat_' ~ complaint.category.lower().replace(' ', '_') %}
+                            <span class="category-tag">{{ lang[cat_key] if lang[cat_key] else complaint.category }}</span>
+                        </td>
+                        <td>
+                            <span class="status-badge 
+                                {% if complaint.status == 'Pending' %}status-pending
+                                {% elif complaint.status == 'In Progress' %}status-progress
+                                {% elif complaint.status == 'Resolved' %}status-resolved
+                                {% else %}status-default{% endif %}">
+                                
+                                {% if complaint.status == 'Pending' %}{{ lang['status_pending'] }}
+                                {% elif complaint.status == 'In Progress' %}{{ lang['status_in_progress'] }}
+                                {% elif complaint.status == 'Resolved' %}{{ lang['status_resolved'] }}
+                                {% else %}{{ complaint.status }}{% endif %}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            {% if complaint.resolution_photo %}
+                            <a href="{{ url_for('static', filename='uploads/' ~ complaint.resolution_photo) }}" 
+                               target="_blank" class="btn btn-sm btn-success shadow-sm">
+                                <i class="bi bi-check-circle-fill me-1"></i> {{ lang['btn_update'] if current_lang != 'en' else 'View Proof' }}
+                            </a>
+                            {% else %}
+                                <span class="no-photo">—</span>
+                            {% endif %}
+                        </td>
+
+                        <td style="min-width: 200px;">
+                            {% if complaint.status == 'Resolved' %}
+                                {% if not complaint.feedback_rating %}
+                                    <form action="{{ url_for('submit_feedback') }}" method="POST" class="d-flex gap-1">
+                                        <input type="hidden" name="complaint_id" value="{{ complaint.id }}">
+                                        <select name="rating" class="form-select form-select-sm" required style="width: 70px;">
+                                            <option value="5">5 ★</option>
+                                            <option value="4">4 ★</option>
+                                            <option value="3">3 ★</option>
+                                            <option value="2">2 ★</option>
+                                            <option value="1">1 ★</option>
+                                        </select>
+                                        <input type="text" name="message" class="form-control form-control-sm" placeholder="Review">
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <div class="text-warning fw-bold">
+                                        {% for i in range(complaint.feedback_rating) %}★{% endfor %}
+                                        <div class="text-muted x-small fw-normal" style="font-size: 0.75rem;">
+                                            "{{ complaint.feedback_msg[:30] }}..."
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted small">Available after resolution</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-muted">
+                            <div>{{ complaint.created_at.strftime('%d %b') }}</div>
+                            <small>{{ complaint.created_at.strftime('%H:%M') }}</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-5 text-center">
+            <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+            <h5 class="text-muted mb-2">{{ lang['no_complaints'] }}</h5>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+
+<style>
+.table-row-blue { background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 100%); }
+.table-row-blue:hover { background: #e0f2fe; }
+.table-header { background: linear-gradient(135deg, #f8fafc, #f1f5f9); font-weight: 600; color: #374151; }
+.bg-primary { background: linear-gradient(135deg, #3b82f6, #60a5fa) !important; }
+.bg-lightblue { background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important; }
+.status-badge { padding: 0.35rem 0.65rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+.status-pending { background: #fef3c7 !important; color: #92400e !important; border: 1px solid #fed7aa; }
+.status-progress { background: #dbeafe !important; color: #1e40af !important; border: 1px solid #93c5fd; }
+.status-resolved { background: #d1fae5 !important; color: #065f46 !important; border: 1px solid #a7f3d0; }
+.category-tag { background: rgba(59,130,246,0.08); color: #3b82f6; padding: 0.4rem 0.75rem; border-radius: 16px; font-size: 0.85rem; font-weight: 500; border: 1px solid rgba(59,130,246,0.15); }
+.no-photo { color: #9ca3af; font-size: 1.2rem; }
+.complaint-icon { background: linear-gradient(135deg, #3b82f6, #10b981); width: 55px; height: 55px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; }
+.btn-primary { background: linear-gradient(135deg, #3b82f6, #60a5fa); border: none; }
+</style>
+{% endblock %}

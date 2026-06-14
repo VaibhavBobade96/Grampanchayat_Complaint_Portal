@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Track Status - #{{ complaint.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0"><i class="bi bi-search me-2"></i>Complaint Tracking</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="text-primary mb-0">Ticket #{{ complaint.id }}</h3>
+                        <span class="badge p-2 px-3 {% if complaint.status == 'Resolved' %}bg-success{% elif complaint.status == 'Pending' %}bg-warning text-dark{% else %}bg-info{% endif %}">
+                            {{ complaint.status }}
+                        </span>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-sm-6">
+                            <p class="text-muted mb-1">Category</p>
+                            <p class="fw-bold">{{ complaint.category }}</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="text-muted mb-1">Ward Number</p>
+                            <p class="fw-bold">Ward No. {{ complaint.ward_no }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p class="text-muted mb-1">Issue Description</p>
+                            <p class="p-3 bg-light rounded">{{ complaint.description }}</p>
+                        </div>
+
+                        {% if complaint.photo %}
+                        <div class="col-md-6">
+                            <p class="text-muted mb-2">Complaint Photo</p>
+                            <img src="{{ url_for('static', filename='uploads/' + complaint.photo) }}" 
+                                 class="img-fluid rounded border" style="max-height: 250px;">
+                        </div>
+                        {% endif %}
+
+                        {% if complaint.resolution_photo %}
+                        <div class="col-md-6">
+                            <p class="text-success mb-2 fw-bold">Resolution Work Photo</p>
+                            <img src="{{ url_for('static', filename='uploads/' + complaint.resolution_photo) }}" 
+                                 class="img-fluid rounded border border-success" style="max-height: 250px;">
+                            <p class="small text-muted mt-2">Resolved on: {{ complaint.resolved_at.strftime('%d-%m-%Y') }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-5 border-top pt-3">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

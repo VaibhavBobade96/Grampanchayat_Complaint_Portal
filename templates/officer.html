@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lang['officer_dash'] }} - Shelgaon Gram Panchayat{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+
+    <div class="row align-items-center mb-5">
+        <div class="col">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-gradient text-white rounded-3 p-3 shadow-sm me-3">
+                    <i class="bi bi-shield-check fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="mb-1 fw-bold text-dark">{{ lang['officer_dash'] }}</h2>
+                    <p class="mb-0 text-muted fs-6">{{ lang['officer_subtitle'] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4 col-md-6">
+            <div class="card stat-card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon warning mb-3">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="stat-number">{{ stats.pending }}</div>
+                    <h6 class="text-muted mb-0">{{ lang['status_pending'] }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card stat-card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon info mb-3">
+                        <i class="bi bi-gear-wide-connected"></i>
+                    </div>
+                    <div class="stat-number">{{ stats.in_progress }}</div>
+                    <h6 class="text-muted mb-0">{{ lang['status_in_progress'] }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12">
+            <div class="card stat-card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="stat-icon success mb-3">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+                    <div class="stat-number">{{ stats.resolved }}</div>
+                    <h6 class="text-muted mb-0">{{ lang['status_resolved'] }}</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-5 overflow-hidden">
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <i class="bi bi-funnel me-2"></i>{{ lang['filter_title'] }}
+        </div>
+        <div class="card-body pt-4">
+            <form method="GET" action="{{ url_for('officer_panel') }}" class="row g-3 align-items-end">
+                <div class="col-lg-2 col-md-3">
+                    <label class="form-label fw-semibold text-muted small">{{ lang['label_ward'] }}</label>
+                    <input type="number" name="ward" class="form-control form-control-lg border-primary-subtle shadow-sm" 
+                           value="{{ request.args.get('ward', '') }}" placeholder="e.g. 5">
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <label class="form-label fw-semibold text-muted small">{{ lang['label_cat'] }}</label>
+                    <select name="category" class="form-select form-select-lg border-primary-subtle shadow-sm">
+                        <option value="">{{ lang['all_cats'] }}</option>
+                        {# Updated to match exact database categories used in app.py/dashboard #}
+                        {% for cat in ['Water Supply','Roads','Sanitation','Street Lights','Electricity','Others'] %}
+                        <option value="{{ cat }}" {% if request.args.get('category') == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <button class="btn btn-primary btn-lg w-100 shadow-sm" type="submit">
+                        <i class="bi bi-search me-1"></i>{{ lang['btn_filter'] }}
+                    </button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a href="{{ url_for('officer_panel') }}" class="btn btn-outline-secondary btn-lg w-100 shadow-sm">
+                        <i class="bi bi-x-circle me-1"></i>{{ lang['btn_reset'] }}
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <a href="{{ url_for('officer_export_csv') }}" 
+                       class="btn btn-success btn-lg w-100 shadow-sm fw-semibold">
+                        <i class="bi bi-download me-1"></i>{{ lang['btn_export'] }}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-lg overflow-hidden">
+        <div class="card-header bg-white py-3 border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <i class="bi bi-list-task text-primary me-2"></i>{{ lang['assigned_tasks'] }} (Newest First)
+                </h5>
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-semibold">
+                    {{ complaints|length }} {{ lang['total_label'] }}
+                </span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if complaints %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="py-3 px-4">#</th>
+                            <th class="py-3">{{ lang['label_citizen'] }}</th>
+                            <th class="py-3">{{ lang['label_cat'] }}</th>
+                            <th class="py-3">{{ lang['label_ward_short'] }}</th>
+                            <th class="py-3">{{ lang['label_status'] }}</th>
+                            <th class="py-3">Waiting Time</th> 
+                            <th class="py-3 text-center">Citizen Photo</th>
+                            <th class="py-3 text-center">Work Photo</th>
+                            <th class="py-3">{{ lang['label_date'] }}</th>
+                            <th class="py-3 text-end px-4">{{ lang['label_action'] }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr class="hover-table-row">
+                            <td class="px-4 fw-bold text-primary">#{{ complaint.id }}</td>
+                            <td>
+                                <div class="fw-semibold text-dark">{{ complaint.user.name }}</div>
+                                <small class="text-muted">{{ complaint.user.username }}</small>
+                            </td>
+                            <td><span class="badge bg-light text-dark border px-2 py-1">{{ complaint.category }}</span></td>
+                            <td class="fw-bold text-primary">{{ lang['label_ward_short'] }} {{ complaint.ward_no }}</td>
+                            <td>
+                                <span class="badge px-3 py-2 rounded-pill 
+                                    {% if complaint.status == 'Pending' %} bg-warning text-dark
+                                    {% elif complaint.status == 'In Progress' %} bg-info text-white
+                                    {% elif complaint.status == 'Resolved' %} bg-success text-white
+                                    {% endif %}">
+                                    {{ lang['status_' ~ complaint.status.lower().replace(' ', '_')] }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if complaint.status != 'Resolved' %}
+                                    {% set wait_hrs = ((now - complaint.created_at).total_seconds() / 3600)|round(1) %}
+                                    <div class="small fw-bold {% if wait_hrs > 24 %}text-danger animate-pulse{% else %}text-muted{% endif %}">
+                                        <i class="bi bi-hourglass-split"></i> 
+                                        {{ wait_hrs }} Hours
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted small"><i class="bi bi-check-all"></i> Completed</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if complaint.photo %}
+                                <a href="{{ url_for('static', filename='uploads/' ~ complaint.photo) }}" target="_blank" 
+                                   class="btn btn-sm btn-outline-primary border-0 p-2">
+                                     <i class="bi bi-image fs-5"></i>
+                                </a>
+                                {% else %}
+                                <span class="text-muted small">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if complaint.resolution_photo %}
+                                <a href="{{ url_for('static', filename='uploads/' ~ complaint.resolution_photo) }}" target="_blank" 
+                                   class="btn btn-sm btn-outline-success border-0 p-2">
+                                    <i class="bi bi-check-square fs-5"></i>
+                                </a>
+                                {% else %}
+                                <span class="text-muted small">Not Uploaded</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="small fw-semibold">{{ complaint.created_at.strftime('%d %b %Y') }}</div>
+                                <small class="text-muted">{{ complaint.created_at.strftime('%I:%M %p') }}</small>
+                            </td>
+                            <td class="text-end px-4">
+                                {% if complaint.status != 'Resolved' %}
+                                <div class="dropdown">
+                                    <button class="btn btn-primary btn-sm shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        Action
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-3" style="min-width: 250px;">
+                                        <li>
+                                            <p class="small fw-bold text-muted mb-2">Upload Photo to Resolve</p>
+                                            <form action="{{ url_for('resolve_complaint', id=complaint.id) }}" method="POST" enctype="multipart/form-data">
+                                                <input type="file" name="resolution_photo" class="form-control form-control-sm mb-2" required>
+                                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                                    <i class="bi bi-cloud-upload me-1"></i> Resolve Now
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item py-2" href="{{ url_for('update_status', id=complaint.id, status='In Progress') }}">
+                                            <i class="bi bi-arrow-repeat me-2 text-info"></i>Stay In Progress</a></li>
+                                    </ul>
+                                </div>
+                                {% else %}
+                                <span class="text-success small fw-bold"><i class="bi bi-check-all"></i> Done</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-clipboard-check display-1 text-muted mb-4"></i>
+                <h4 class="text-muted">No Tasks Found</h4>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important; }
+.stat-card { transition: all 0.3s ease; border: 1px solid #f0f0f0; border-radius: 16px; }
+.stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important; }
+.stat-icon { width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; }
+.stat-icon.warning { background: #fffbeb; color: #f59e0b; }
+.stat-icon.info { background: #ecfeff; color: #0891b2; }
+.stat-icon.success { background: #f0fdf4; color: #16a34a; }
+.stat-number { font-size: 2.5rem; font-weight: 800; color: #1e293b; margin: 10px 0; }
+.hover-table-row:hover { background-color: #f8fafc !important; }
+.animate-pulse { animation: pulse 2s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+</style>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                
+                <!-- Header with gradient -->
+                <div class="card-header text-center text-white py-4 rounded-top-4" style="background: linear-gradient(135deg, #4e73df, #1cc88a);">
+                    <h3 class="fw-bold mb-1">Add New Officer</h3>
+                    <small>Register a new officer for the portal</small>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        <!-- Full Name -->
+                        <div class="form-floating mb-3">
+                            {{ form.name(class="form-control", placeholder="Full Name") }}
+                            <label for="name">Full Name</label>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-floating mb-3">
+                            {{ form.email(class="form-control", placeholder="Email Address") }}
+                            <label for="email">Email Address</label>
+                        </div>
+
+                        <!-- Username -->
+                        <div class="form-floating mb-3">
+                            {{ form.username(class="form-control", placeholder="Username") }}
+                            <label for="username">Username</label>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-floating mb-3">
+                            {{ form.password(class="form-control", placeholder="Password") }}
+                            <label for="password">Password</label>
+                        </div>
+
+                        <!-- Role Dropdown -->
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            {{ form.role(class="form-select") }}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mt-4">
+                            {{ form.submit(class="btn btn-gradient btn-lg text-white fw-bold", style="background: linear-gradient(135deg, #1cc88a, #4e73df); border: none;") }}
+                        </div>
+                    </form>
+
+                    <!-- Back Link -->
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('dashboard') }}" class="small text-muted">
+                            &larr; Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional: Add custom CSS for hover effects -->
+<style>
+    .btn-gradient:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+    .card-header small {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
